@@ -75,7 +75,7 @@ class all_df_balanced():
         models = [LogisticRegression(multi_class="multinomial"), KNeighborsClassifier(), RandomForestClassifier()]
 
         # Model building
-        plt.figure(figsize=(25, 7))
+        figure = plt.figure(figsize=(25, 7))
         plt.subplots_adjust(hspace=0.5)
         plt.suptitle("Confusion Matrix", fontsize=18, y=0.95)
         for n, model in enumerate(models):
@@ -94,7 +94,7 @@ class all_df_balanced():
             ax.xaxis.set_tick_params(rotation=90)
             ax.xaxis.set_ticklabels(model_labels);
             ax.yaxis.set_ticklabels(model_labels);
-        plt.show()
+        st.pyplot(figure)
         
         
 
@@ -109,7 +109,7 @@ dataset = st.container()
 features = st.container()
 
 with header:
-    st.title("Ok Cupid Date a Scientist.")
+    st.markdown("# Ok Cupid Date a Scientist.:cupid:")
     col1, col_mid, col2 = st.columns((1, 0.1, 1))
     with col1:   
         st.write("This project analyzes data from on-line dating application OKCupid. In recent years, there has been a massive rise in the usage of dating apps to find love. Many of these apps use sophisticated data science techniques to recommend possible matches to users and to optimize the user experience. These apps give us access to a wealth of information that we've never had before about how different people experience romance. The goal of this project is to scope, prep, analyze, and create a machine learning model to solve a question.")
@@ -234,16 +234,58 @@ st.write("Similarly for drugs the majority of users chose \"no\" for smoking.")
 smoking_count = profiles.groupby(by="smokes").size().reset_index(name="counts")
 st.plotly_chart(px.bar(data_frame=smoking_count, x="counts", y="smokes", color="smokes"))
 
-
-
-col1, col_mid, col2 = st.columns((1, 0.1, 1))
-with col1:    
-        st.header("Data Acquisition")  
-        st.write("In this project I will use the data stored in  YahooFinance Website with Yahoo! Finance's API")
-        st.write('[Documentation](http://theautomatic.net/yahoo_fin-documentation/)')   
-with col2:
-#displaying the image on streamlit app
-        st.image(image)
-        st.write()  
+st.markdown("### Data Preparation")
+st.markdown("#### Preprocessing ")
+st.write("""Preparing the data for modeling is important since it can speed up the process and produce better models. As the adage goes, \"garbage in garbage out\" so we want to make sure the data we are imputing into our modelling step is good enough to share with others.\n
+The data for the model is going to be a subset of the variables. The variables were selected because they might be a good predictor for drinking habits, where some of the variables that were not selected such as `height` is probably not a good indicator. \n
+Here na values are dropped to create a fully complete data set. """)
+cols = ["location", 'body_type', 'diet', 'education', 'ethnicity', 'religion',
+       'sex', 'smokes', 'job', "age", "drinks"]
+df = profiles[cols].dropna()
+st.dataframe(df.head())
 st.markdown("""---""") 
 
+st.header("Building the Model")  
+st.markdown("""
+            - **Labels Encoding:** \n   
+            Label Encoding refers to converting the labels into a numeric form so as to convert them into the machine-readable form. Machine learning algorithms can then decide in a better way how those labels must be operated. It is an important pre-processing step for the structured dataset in supervised learning. In label encoding, we replace the categorical value with a numeric value between 0 and the number of classes minus 1. \n
+            - **Label Imbalance :** \n   
+            An imbalance in the prediction label needs to be checked. This is important since it's a multi-class problem where two or more outcomes can be had. An imbalance in a response variable is bad since it means that some labels only occur a few times. This is an issue for machine learning algorithms if there are not enough data to train with which will give bad predictions.   
+            In the given dataset, we observe that the counts of some drinks labels are less equal (i.e., with large deviations). Hence, we do have to worry about imbalances and try to address this problem.\n
+            - **Splitting Data:** \n   
+            Next the data needs to be split into train and validation sets. In this split 25% of the data is reserved for the final validation, while 75% is kept for training the model. \n
+            - **Model building:**\n     
+            Now it's time to create some models, here is a list of [Multi class models](https://scikit-learn.org/stable/modules/multiclass.html) available in scikit learn. For this project three common algorithms will be used to make predictions.""")
+st.markdown("#### Evaluation Metrics")                   
+st.markdown("""In the models, there will be several values that can be evaluated below is a quick diagram:\n
+![](https://miro.medium.com/max/1400/1*UVP_xb4F6J-M-xH3haz5Jw.png)
+Here is a quick description of the metrics:\n
+
+- **Accuracy:** is the correct values divided by total values\n
+- **Precision:** is the True Positives divided by the sum of True Positives and False Negatives. So precision is the values of the true positives divided by the actual positive values.\n
+- **Recall:** is the True Positives divided by the sum of True Positives and False Positives. So recall is the values of the true positives divided by the positive guesses.\n
+- **F1-score:** is a blended score of precision and recall which balances both values.\n
+- **Macro Avg:** is the unweighted mean value of precision and recall. \n
+- **Weighted Avg:** is the weighted mean value of precision and recall by the support values for each class.\n
+- **Support:** is the number of observations in class to predict. """)
+st.markdown("Below is a confusion matrix of the results with the true values on the y axis and predicted values along the x axis. Since the diagonals are lighter in color and have higher numbers, the accuracy is going to be high since those are the True Positives.")
+all_df_balanced.all_dfs(df=df, percentage=0.20, total_class_drinks=6)
+st.markdown("""---""") 
+st.markdown("### Evaluate the score")
+st.markdown("""
+- **Logistic Regression:** \n   
+The first model is using logistic regression with the `multi_class="multinomial"` argument. Using `model` predictions are created from the training dataset which is used to figure out how well the model preformed.
+The final accuracy of the logistic regression model is 26% which is not good considering a random guess should result in being correct ~16% of the time (1/6).\n
+- **K Nearest Neighbor:** \n   
+The next models is the `KNeighborsClassifier` which will take 20 of it's neighbors to predict the drink habits. The default value for `n_neighbors` is 5 which was kept. This number can be tuned later on if needed. This model had a 65% accuracy which is a good sign.\n
+- **Random Forest:**\n    
+The last model is the Random Forest, the default `max_depth` is `none` which means that it will "If None, then nodes are expanded until all leaves are pure or until all leaves contain less than min_samples_split samples.". The results are very promising because it has a 85% accuracy with this model.""")
+st.markdown("#### Final Model")
+st.markdown("""So it seems that the `Random Forest Model` might be the best model for OkCupid to use when users don't have their drink habit listed on their user profile. By using the hold out or validation set, we get ~85% accuracy which is very good. 
+In the confusion matrix, it becomes clear that "Socially", "Desperately", "Often", and "Not at all" were predicted most often, and the least accurate predictions were between "not at all", "rarely", "very often" since the vertical color band represents even distributed guesses mostly correct and some wrong. """)
+st.markdown("""---""") 
+st.markdown("### Conclusion")
+st.write("In this project machine learning was used to predict the drinking habits of OkCupid users. This is an important feature since some people likes a lot going out and party and others prefer doing sports or cultural activities, so it would be better if this matches between compatible users. If users don't input their drinking habits, an algorithmic solution could have generated a habit to impute missing data when making matches.")
+st.markdown("#### Next Steps ")
+
+st.write("Next steps will be to add additional models or tune the hyper parameters of the used models to see if any more predictive power could be squeezed out of the algorithms. ")
