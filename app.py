@@ -105,7 +105,7 @@ st.set_page_config(page_title="Ok Cupid Date a Scientist",
 
 #url = "https://www.kaggle.com/datasets/andrewmvd/okcupid-profiles/download"
 
-profiles=pd.read_csv(r"./profiles.csv")
+profiles=pd.read_csv(r"/profiles.csv")
 
 header = st.container()
 dataset = st.container()
