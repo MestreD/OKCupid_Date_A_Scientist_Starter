@@ -2,10 +2,11 @@
 ## General libraries
 import numpy as np
 import pandas as pd
-
 from matplotlib import pyplot as plt
 import seaborn as sns
 import plotly.express as px
+
+
 #This will change the renderer to a version that uses the Plotly JS code directly and in online mode.
 import plotly.io as pio
 pio.renderers.default = 'notebook_connected'
@@ -102,7 +103,9 @@ class all_df_balanced():
 st.set_page_config(page_title="Ok Cupid Date a Scientist",
         page_icon=("❤️"), layout="wide")
 
-profiles = pd.read_csv('profiles.csv')
+#url = "https://www.kaggle.com/datasets/andrewmvd/okcupid-profiles/download"
+
+profiles=pd.read_csv("profiles.csv")
 
 header = st.container()
 dataset = st.container()
