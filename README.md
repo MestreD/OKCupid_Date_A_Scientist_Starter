@@ -7,4 +7,4 @@ This solution will use descriptive statistics and data visualization to find key
 
 The project will conclude with the evaluation of the machine learning model selected with a validation data set. The output of the predictions can be checked through a confusion matrix, and metrics such as accuracy, precision, recall, F1 and Kappa scores.
 
-[You can visualize the application here.]([https://share.streamlit.io/mestred/okcupid_date_a_scientist_starter/main/app.py])
+[You can visualize the application here.](https://share.streamlit.io/mestred/okcupid_date_a_scientist_starter/main/app.py)
